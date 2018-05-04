@@ -1,0 +1,82 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Insert title here</title>
+<style>
+ a{text-decoration: none}
+</style>
+ <script type="text/javascript" src="../js/jquery-3.3.1.min.js"></script>
+ <script >
+ $(function() {
+	//alert(1)
+	$("#keyWord").keyup(function() {
+		if($(this).val()==""){ //공백
+			$("#suggest").hide();
+			return;
+		}
+		
+	//ajax기능구현
+	$.ajax({
+		type:"post", //전송방식
+		url:"../suggestServlet", //서버의 주소 //로직은 jsp보다 서블릿이 적합 
+		data:"keyWord="+$(this).val() , //서버에게 보낼 parameter정보
+		dataType:"json" , //서버가 frontㄹ 보내주는 데이터 타입(text(default), html , xml , json)
+		success:function(result){//개수|단어,단어,단어~~~ 
+			//console.log(result)
+			var str="";
+			$.each(result,function(index,item){
+				str+="<a href='#'>"+item+"</a><br/>";
+			});
+			
+			$("#suggest").html(str);
+			$("#suggest").show();
+		},
+		error:function(err){
+			console.log("에러발생 : "+err)
+		}
+	})//ajax끝
+	})//keup끝
+	
+	//a태그를 클릭했을때 이벤트 처리 
+	/* $("a").click(function() { //정적이벤트에서만 사용가능 ->동적으로 생성된 element에 이벤트 적용안됨
+		alert("하하")
+	}) */
+	
+	//동적으로 생성된 element에 이벤트 적용 -> on()함수
+	/*
+	동적으로 생성된 요소에 이벤트 적용할때 on()함수 사용법
+	$(이벤트 대상 부모노드).on(이벤트 종류,이벤트대상,함수);
+	*/
+	
+	$("#suggest").on("click","a",function(){
+		//alert(11)
+		//눌러진 대상의 value값 가져와야해
+		$("#keyWord").val($(this).text()); //input만 val
+		$("#suggest").hide();
+	});
+	
+})//jquery ready끝
+ 
+ 
+ </script>
+
+</head>
+<body>
+<h3> [ Suggest 기능 구현 ]</h3>	
+<form name="search" id="search">
+	<input type="text" name="keyWord" id="keyWord"/>
+	<input type="button" value="검색"/>	
+</form>
+<!--제시어 단어 출력부분 -->
+<div id="suggest" style="display:none"></div>
+
+
+
+</body>
+</html>
+
+
+
+
+
